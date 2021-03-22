@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+    <div id="site_wrapper">
+        <div id="site_content">
+            <div class="devInfo">
+                <h2>Ny opdatering!</h2>
+                <p>Einsteinfessor er nu mere stabil og kompatibel end nogensinde før! Opdateringen udkom 08/01/2020.</p>
+                <span class="closebtn" onclick="killBtn(this.parentElement)">&times;</span>
+            </div>
+
+            <header>
+                <h1 id="title">Einsteinfessor</h1>
+                <h3>- få svar til <a style="color: inherit;" href="https://www.matematikfessor.dk/">Matematikfessor</a> lektier</h3>
+            </header>
+
+            <div class="container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div>
+                        {% for category, message in messages %}
+                            {% if isinstance(s, type(str)) %}
+                                <p class="alert alert-{{ category }} mt-1">{{ message }}</p>
+                            {% else %}
+                                {% for msg in message %}
+                                    <p class="alert alert-{{ category }} mt-1">{{ msg }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div id="wrapper">
+                
+                <!-- Form and button -->
+                <div id="abekat">
+                    <form method="POST" action="">
+                        {{ form.csrf_token }}
+                        <fieldset class='form-group'>
+                            <legend class="border-bottom mb-4">Indsæt tekst her:</legend>
+                            {{ form.content(rows="15", cols="110", id="contentForm") }}
+                        </fieldset>
+                        {{ form.submit(id="formSubmitBtn", class="btn btn-outline-info btnwrapper") }}
+                    </form>
+
+                    <button onclick="pasteToBox()" id="clipboard" class="btn btn-outline-info btnwrapper">Kopier fra udklipsholder og få svar</button>
+                    <a href="{{url_for('results')}}" id="lastResult" class="btn btn-outline-secondary btnwrapper">Se resultater</a>
+                </div>
+                <!-- // Form and button -->
+
+                <!-- CARD -->
+                <div class="card" id="card">
+                    <img data-toggle="modal" data-target="#videoModal" src="/static/images/einsteinfessorguidethumb.jpg" class="card-img-top" alt="Thumbnail for guide video">
+                    <div class="card-body">
+                    <h5 class="card-title">Få Hjælp</h5>
+                    <p class="card-text"><strong>Videoguide:</strong> Klik på billedet<br><strong>Tesktguiden:</strong> Klik på knappen</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#helpModal">Få Hjælp</button>
+                    </div>
+                </div>
+                <!-- // CARD -->
+
+            </div>
+
+
+            <!-- HELP-MODAL -->
+            <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Guide</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <strong>Trin 1</strong> Naviger til dine matematikfessor lektier<br>
+                    <strong>Trin 2:</strong> Højre klik og klik på "View page source" eller "Se kildekode"<br>
+                    <strong>Trin 3:</strong> Vælg det hele (CTRL+A) og kopier det (CTRL+C)<br>
+                    <strong>Trin 4:</strong> Klik på "Kopier fra udklipsholder og få svar" - hvis det ikke virker så følg trin 5 og 6 <br>
+                    <strong>Trin 5 (kun hvis trin 4 ikke lykkedes):</strong> Indsæt hele teksten (CTRL+V) i boksen.<br>
+                    <strong>Trin 6 (kun hvis trin 4 ikke lykkedes):</strong> Klik på knappen, og nu får du svarene på opgaven
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Luk</button>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- VIDEO-MODAL -->
+            <div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModal" aria-hidden="true">
+                <div class="embed-responsive embed-responsive-21by9">
+                    <video controls preload="none"><source src="/static/EinsteinfessorGuide.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+        </div>
+    
+
+        <!-- FOOTER -->
+        <div id="footer">
+            <a href="https://www.paypal.com/paypalme/wakils" target="_blank"><img src="/static/images/PayPal_Logo.png"
+                style="max-width:65%; max-height:65%;" data-toggle="tooltip" data-placement="top"
+                title="Jeg laver dette arbejde gratis i min fritid, så jeg vil sætte pris på alle donationer :)"></a>
+            <a href="mailto:villads111@gmail.com" target="_blank"><img src="/static/images/Gmail-Logo.png"
+                style="max-width:65%; max-height:65%;" data-toggle="tooltip" data-placement="top"
+                title="Kontakt mig via mail"></a>
+            <a href="http://wakils.com" target="_blank"><img src="/static/images/wakils_Logo.png"
+                style="max-width:65%; max-height:65%;" data-toggle="tooltip" data-placement="top"
+                title="Tjek min hjemmeside ud - det er mit portefølje for mit redigeringsarbejde"></a>
+            <img src="/static/images/Discord_Logo.png"
+                style="max-width:65%; max-height:65%;" data-toggle="tooltip" data-placement="top"
+                title="Villads#7669">
+            <a href="https://twitter.com/realwakils" target="_blank"><img src="/static/images/Twitter_Logo.png"
+                style="max-width:55%; max-height:65%;"></a>
+            <span>Einsteinfessor • wakils (Villads Eskesen)</span>
+        </div>
+    </div>
+{% endblock content %}

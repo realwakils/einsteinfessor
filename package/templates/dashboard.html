@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <a href="/">Go Home</a><br>
+        <button data-toggle="collapse" data-target="#users" class="btn btn-secondary">Total amount of users: {{ users.count() }}</button>
+        <div id="users" class="collapse">
+            {{ users.all() }}
+        </div>
+        <button data-toggle="collapse" data-target="#usersLatestVisit" class="btn btn-secondary">Users after latest_visit</button>
+        <div id="usersLatestVisit" class="collapse">
+            {{ User.query.order_by(User.latest_visit.desc()).all() }}
+        </div>
+        <button data-toggle="collapse" data-target="#usersButHome" class="btn btn-secondary">Users but not home: {{ User.query.filter(User.latest_url_visited != "/").count() }}</button>
+        <div id="usersButHome" class="collapse">
+            {{ User.query.filter(User.latest_url_visited != "/").all() }}
+        </div>
+        <p>Total amount of calcuations: {{ calc_count }}</p>
+    </div>
+    
+    {% for user in users %}
+        <div class="container">
+            <h1>{{ user.ip }} ({{ user.calcuations|length }})</h1>
+            <h2>First Visit: {{ user.first_visit }}</h2>
+            {% for calc in user.calcuations %}
+                <button data-toggle="collapse" data-target="#calc{{ calc.id }}">Calcuation {{ calc.id }}: {{ calc.time }}</button>
+                <div id="calc{{ calc.id }}" class="collapse">
+                    Calcuation {{ calc.id }} <br>
+                    Date calcuated: {{ calc.time }} <br><br>
+                    {{ json.loads(calc.results) }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock content %}

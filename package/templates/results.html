@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='results.css') }}">
+
+{% set results = json.loads(resultsInfo.items[0].results) %}
+
+{% if "time_left" in results %}
+  {% set model = 1 %}
+{% else %}
+  {% set model = 2 %}
+{% endif %}
+
+{% if model == 1 %}
+  {% set time_between_now_and_then = resultsInfo.items[0].time - current_time %}
+  {% set time_difference = time_between_now_and_then.total_seconds()|abs|int %}
+  {% set time_left = results['time_left'] - time_difference %}
+  {% set time_left_abs = results['time_left']|abs - time_difference %}
+{% endif %}
+
+<div style="margin: auto; width: 80%;">
+
+  <h1>Resultater</h1>
+  <h4>sorteret fra nyeste til ældste</h4>
+  <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href={{url_for('home')}}>Hjem</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Resultater</li>
+      </ol>
+    </nav>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} mt-1">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div id="wrapper_calcs_info">
+    <div class="alert alert-info" id="calcs">
+      {% for calcuation_num in resultsInfo.iter_pages() %}
+        {% if calcuation_num %}
+          {% if resultsInfo.page == calcuation_num %}
+            <a class="btn btn-info" href="{{ url_for('results', calcuation=calcuation_num) }}">{{ calcuation_num }}</a>
+          {% else %}
+            <a class="btn btn-outline-info" href="{{ url_for('results', calcuation=calcuation_num) }}">{{ calcuation_num }}</a>
+          {% endif %}
+        {% else %}
+          ...
+        {% endif %}
+      {% endfor %}
+    </div>
+  
+
+    <div class="alert alert-primary" id="infobox">
+      <h1>{{ results['homework_title'] }}</h1>
+      <hr class="style1" style="margin-top: 0em;"></hr>
+      <h2>Udregning fra: {{ resultsInfo.items[0].time.strftime("%d/%m/%Y, %H:%M:%S") }}</h2>
+
+      {% if model == 1 %}
+        {% if time_left_abs < 60 %} <!-- it's under a minute ago or till -->
+          {% if time_left < 0 %} <!-- DATID -->
+            <h3>Det var {{ time_left|round(2, 'common') }} sekunder siden at lektien løb ud</h3>
+          {% else %} <!-- NUTID -->
+            <h3>Om {{ time_left|round(2, 'common') }} sekunder løber lektien ud</h3>
+          {% endif %}
+        {% endif %}
+
+        {% if time_left_abs < 3600 %} <!-- it's under an hour ago or till and more than a minute ago or till -->
+          {% if time_left_abs >= 60 %}
+          
+            {% if time_left < 0 %} <!-- DATID -->
+              <h3>Det var {{ (time_left / 60)|round(2, 'common') }} minutter siden at lektien løb ud</h3>
+            {% else %}  <!-- NUTID -->
+              <h3>Om {{ (time_left / 60)|round(2, 'common') }} minutter løber lektien ud</h3>
+            {% endif %}
+
+          {% endif %}
+        {% endif %}
+
+        {% if time_left_abs < 86400 %} <!-- it's under a day ago or till and more than an hour ago or till -->
+          {% if time_left_abs >= 3600 %}
+          
+            {% if time_left < 0 %} <!-- DATID -->
+              <h3>Det var {{ (time_left / 3600)|round(2, 'common') }} timer siden at lektien løb ud</h3>
+            {% else %}  <!-- NUTID -->
+              <h3>Om {{ (time_left / 3600)|round(2, 'common') }} timer løber lektien ud</h3>
+            {% endif %}
+            
+          {% endif %}
+        {% endif %}
+
+        {% if time_left_abs >= 86400 %} <!-- it's over a day ago or till -->
+          {% if time_left < 0 %} <!-- DATID -->
+            <h3>Det var {{ (time_left_abs / 86400)|round(2, 'common') }} dage siden at lektien løb ud</h3>
+          {% else %}  <!-- NUTID -->
+            <h3>Om {{ (time_left / 86400)|round(2, 'common') }} dage løber lektien ud</h3>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+    
+    {% if model == 2 %}
+      <div class="alert alert-warning"y>
+        <h3>Hvorfor mangler noget?</h3>
+        Denne udregning er udregnet før lektien var lavet. Derfor kan det korrekte svar og tidsudregning ikke udregnes.
+        <br>Du kan dog nok selv regne ud hvad svaret er ud fra forklaringen.
+      </div>
+    {% endif %}
+  </div>
+
+  <div id="results">
+    {% for idx, ques in enumerate(results['question']) %}
+      <div class="alert alert-secondary">
+        <h3 class="border-success" >Spørgsmål {{ idx + 1 }}</h3>
+        <p>{{ ques['question'] }}</p>
+        <hr class="style1" style="margin-top: 0em;"></hr>
+        {% if 'answer_options' in ques %}
+          <div class="wrapper">
+            {% for idxOpt, option in enumerate(ques['answer_options']) %}
+              {% if model == 2 %}
+                <div class="alert alert-primary resultsWrapper">
+                  {{ option }}
+                </div>
+              {% elif idxOpt == ques['correct'] %}
+                <div class="alert alert-success resultsWrapper">
+                  {{ option }}
+                </div>
+              {% else %}
+                <div class="alert alert-primary resultsWrapper">
+                  {{ option }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <hr class="style1" style="margin-top: 0em;"></hr>
+        {% endif %}
+        <p><strong>Forklaring:</strong><br>{{ ques['explanation'] }}</p>
+        <a href="https://www.matematikfessor.dk/lessons/{{ ques['lesson_id'] }}" target="_blank" class="badge badge-primary">Se Lektion: {{ ques['lesson_title'] }}</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <p class="text-muted close" style="margin-left: 1em;"><a href="#">Gå til toppen</a></p>
+
+</div>
+{% endblock content %}
