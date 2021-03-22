@@ -61,7 +61,7 @@ def admin():
     user.latest_url_visited = "/dashboard"
     print(user)
     db.session.commit()
-    if user_ip == "5.186.54.197":
+    if user_ip == "5.186.54.197" or user_ip == "127.0.0.1":
         #package.admin.IP() #doesn't work currently
         users = User.query.order_by(User.first_visit.desc())
         page = request.args.get('page', 1, type=int)

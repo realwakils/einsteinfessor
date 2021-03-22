@@ -1,8 +1,5 @@
 import requests, re, json
-from selenium import webdriver
-from time import sleep
-from simplified_scrapy import SimplifiedDoc,utils
-from os import system
+from simplified_scrapy import SimplifiedDoc
 
 """
 Einsteinfessor's internal notes by wakils
