@@ -3,12 +3,14 @@ from package import app, db
 from package.forms import Lesson
 from package.getResults import getResultsRaw
 from package.models import Calcuation, User
-import datetime, package.admin, requests, json, re
+import datetime, package.admin, requests, json, re, os
+
+prod = app.config['ENV'] == 'prod'
 
 @app.before_request
 def handleUser():
-    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    print(request.headers)
+    user_ip = request.header['X-Forwarded-For'] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    print(user_ip)
     if not User.query.filter_by(ip=user_ip).first():
         user = User(ip=user_ip)
         db.session.add(user)
