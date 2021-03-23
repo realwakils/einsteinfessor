@@ -22,7 +22,7 @@ def handleUser():
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
     form = Lesson()
     if request.method == "POST":
@@ -40,7 +40,7 @@ def home():
 
 @app.route("/results")
 def results():
-    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     user = User.query.get(user_ip)
     user.latest_url_visited = "/results"
     db.session.commit()
@@ -59,7 +59,7 @@ def results():
 
 @app.route("/dashboard")
 def admin():
-    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     user = User.query.filter_by(ip=user_ip).first()
     user.latest_url_visited = "/dashboard"
     print(user)
@@ -93,7 +93,7 @@ def servererror(e):
 
 @app.route("/api/", methods=['POST'])
 def api():
-    user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     user = User.query.filter_by(ip=user_ip).first()
     user.latest_url_visited = "/api"
     db.session.commit()
