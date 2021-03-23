@@ -5,12 +5,12 @@ from package.getResults import getResultsRaw
 from package.models import Calcuation, User
 import datetime, package.admin, requests, json, re, os
 
-prod = app.config['ENV'] == 'prod'
+prod = app.config['ENV'] == 'production'
 
 @app.before_request
 def handleUser():
     user_ip = request.headers['X-Forwarded-For'] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    print(user_ip, request.headers['X-Forwarded-For'], app.config)
+    print(user_ip)
     if not User.query.filter_by(ip=user_ip).first():
         user = User(ip=user_ip)
         db.session.add(user)
