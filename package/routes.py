@@ -9,7 +9,7 @@ prod = app.config['ENV'] == 'production'
 
 @app.before_request
 def handleUser():
-    user_ip = request.headers['X-Forwarded-For'] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     print(user_ip)
     if not User.query.filter_by(ip=user_ip).first():
         user = User(ip=user_ip)
