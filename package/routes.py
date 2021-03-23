@@ -8,7 +8,7 @@ import datetime, package.admin, requests, json, re
 @app.before_request
 def handleUser():
     user_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    print(request.remote_addr, "jaw9dhawud9hA", "aaa", request.environ['REMOTE_ADDR'])
+    print(request.headers)
     if not User.query.filter_by(ip=user_ip).first():
         user = User(ip=user_ip)
         db.session.add(user)
