@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, abort, redirect, url_for
+from flask import render_template, flash, request, abort, redirect, url_for, send_from_directory
 from package import app, db
 from package.forms import Lesson
 from package.getResults import getResultsRaw
@@ -71,7 +71,10 @@ def admin():
         return render_template('dashboard.html', users=users, calc_count=Calcuation.query.count(), json=json, page=page, User=User)
     return redirect(url_for('home'))
     
-
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory(app.static_folder, request.path[1:])
+    
 @app.errorhandler(404)
 def notfound(e):
     return render_template('errors/404.html'), 404
