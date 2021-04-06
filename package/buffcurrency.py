@@ -20,7 +20,6 @@ def update():
 				else:
 						BuffRates.query.first().rates = json.dumps(data)
 						db.session.commit()
-				print("a")
 
 
 scheduler = BackgroundScheduler()
