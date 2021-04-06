@@ -20,3 +20,10 @@ class Calcuation(db.Model):
 
     def __repr__(self):
         return f"Calcuation('{self.id}', '{self.ip}', '{self.results}, '{self.time}', '{self.raw}')"
+
+class BuffRates(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rates = db.Column(db.String(), nullable=False)
+
+    def __repr__(self):
+        return f"BuffRates('{self.id}', '{self.rates}')"

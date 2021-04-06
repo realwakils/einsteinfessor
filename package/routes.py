@@ -2,7 +2,7 @@ from flask import render_template, flash, request, abort, redirect, url_for
 from package import app, db
 from package.forms import Lesson
 from package.getResults import getResultsRaw
-from package.models import Calcuation, User
+from package.models import Calcuation, User, BuffRates
 import datetime, package.admin, requests, json, re, os
 
 prod = app.config['ENV'] == 'production'
@@ -70,7 +70,6 @@ def admin():
         page = request.args.get('page', 1, type=int)
         return render_template('dashboard.html', users=users, calc_count=Calcuation.query.count(), json=json, page=page, User=User)
     return redirect(url_for('home'))
-    
 
 @app.errorhandler(404)
 def notfound(e):
@@ -120,3 +119,7 @@ def api():
     } # For the Flutter app, additional information is included. The Chrome extension
     # should just ignore this.
     return success
+
+@app.route('/buffcurrency')
+def buff():
+		return json.loads(BuffRates.query.first().rates)
