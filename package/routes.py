@@ -1,4 +1,5 @@
 from flask import render_template, flash, request, abort, redirect, url_for, send_from_directory
+from flask_cors import cross_origin
 from package import app, db
 from package.forms import Lesson
 from package.getResults import getResultsRaw
@@ -125,5 +126,6 @@ def api():
     return success
 
 @app.route('/buffcurrency')
+@cross_origin()
 def buff():
 		return json.loads(BuffRates.query.first().rates)
