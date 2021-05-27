@@ -92,7 +92,7 @@ def servererror(e):
 # API
 # This is just for the Chrome extension, I'm r***ded so this is not secured properly pls no abuse
 
-@app.route("/api/", methods=['POST'])
+@app.route("/api", methods=['POST'])
 def api():
     user_ip = getUserIP(request)
     submitLocationToDatabase(user_ip, "/api")
