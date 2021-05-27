@@ -20,7 +20,7 @@
     {% for user in users %}
         <div class="container">
             <h1>{{ user.ip }} ({{ user.Calculations|length }})</h1>
-            <h2>Days since first visit: {{ (now - user.first_visit).days }}</h2>
+            <h2>Days since First Visit: {{ (now - user.first_visit).days }}</h2>
             {% for calc in user.Calculations %}
                 <button data-toggle="collapse" data-target="#calc{{ calc.id }}">Calculation {{ calc.id }}: {{ calc.time }}</button>
                 <div id="calc{{ calc.id }}" class="collapse">
