@@ -3,15 +3,16 @@ from flask_cors import cross_origin
 from package import app, db
 from package.forms import Lesson
 from package.getResults import getResultsRaw
-from package.models import Calcuation, User, BuffRates
-import datetime, package.admin, requests, json, re, os
+from package.models import Calculation, User, BuffRates
+import datetime, json, re, os
+from package.utils import *
 
-prod = app.config['ENV'] == 'production'
+
 
 @app.before_request
 def handleUser():
-    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    print(user_ip)
+    user_ip = getUserIP(request)
+
     if not User.query.filter_by(ip=user_ip).first():
         user = User(ip=user_ip)
         db.session.add(user)
@@ -23,14 +24,14 @@ def handleUser():
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = getUserIP(request)
 
     form = Lesson()
     if request.method == "POST":
         if form.validate_on_submit():
             results = getResultsRaw(form.content.data)
 
-            calc = Calcuation(results=results, ip=user_ip, raw=form.content.data)
+            calc = Calculation(results=results, ip=user_ip, raw=form.content.data)
             db.session.add(calc)
             db.session.commit()
 
@@ -41,35 +42,30 @@ def home():
 
 @app.route("/results")
 def results():
-    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    user_ip = getUserIP(request)
+    submitLocationToDatabase(user_ip, "/results")
     user = User.query.get(user_ip)
-    user.latest_url_visited = "/results"
-    db.session.commit()
 
     if not user:
         flash('Du er ikke registreret - prøv igen', 'info')
         return redirect(url_for('home'))
-    if not user.calcuations:
+    if not user.Calculations:
         flash('Du har ikke modtaget nogle resultater endnu...', 'info')
         return redirect(url_for('home'))
 
-    page = request.args.get('calcuation', 1, type=int)
-    resultsInfo = Calcuation.query.filter_by(ip=user_ip).order_by(Calcuation.time.desc()).paginate(page=page, per_page=1)
+    page = request.args.get('Calculation', 1, type=int)
+    resultsInfo = Calculation.query.filter_by(ip=user_ip).order_by(Calculation.time.desc()).paginate(page=page, per_page=1)
 
     return render_template('results.html', title='Results', resultsInfo=resultsInfo, json=json, enumerate=enumerate, current_time=datetime.datetime.now())
 
 @app.route("/dashboard")
 def admin():
-    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    user = User.query.filter_by(ip=user_ip).first()
-    user.latest_url_visited = "/dashboard"
-    print(user)
-    db.session.commit()
-    if user_ip == os.environ.get("_self.OWNER_IP", default="") or user_ip == "127.0.0.1":
-        #package.admin.IP() #doesn't work currently
-        users = User.query.order_by(User.first_visit.desc())
-        page = request.args.get('page', 1, type=int)
-        return render_template('dashboard.html', users=users, calc_count=Calcuation.query.count(), json=json, page=page, User=User)
+    user_ip = getUserIP(request)
+    submitLocationToDatabase(user_ip, "/dashboard")
+
+    if user_ip == os.environ.get("OWNER_IP", default="") or user_ip == "127.0.0.1":
+        users = User.query.order_by(User.first_visit.desc()).filter(User.latest_url_visited != "/")
+        return render_template('dashboard.html', users=users, calc_count=Calculation.query.count(), json=json, User=User, now=datetime.datetime.now())
     return redirect(url_for('home'))
     
 @app.route('/robots.txt')
@@ -94,13 +90,12 @@ def servererror(e):
 
 
 # API
+# This is just for the Chrome extension, I'm r***ded so this is not secured properly pls no abuse
 
 @app.route("/api/", methods=['POST'])
 def api():
-    user_ip = request.headers['X-Forwarded-For'].split(',')[0] if prod else request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    user = User.query.filter_by(ip=user_ip).first()
-    user.latest_url_visited = "/api"
-    db.session.commit()
+    user_ip = getUserIP(request)
+    submitLocationToDatabase(user_ip, "/api")
 
     code = request.data.decode('utf-8')
     
@@ -113,17 +108,19 @@ def api():
 
     codeCalced = getResultsRaw(code)
 
-    calc = Calcuation(results=codeCalced, ip=user_ip, raw=code)
+    calc = Calculation(results=codeCalced, ip=user_ip, raw=code)
     db.session.add(calc)
     db.session.commit()
 
     success = {
         'status_code' : 1,
-        'message' : "Success!",
-        'results' : codeCalced
-    } # For the Flutter app, additional information is included. The Chrome extension
-    # should just ignore this.
+        'message' : "Success!"
+    }
     return success
+
+
+# Buff
+# This is completely irrelevant to Einsteinfessor, I'm just merging projects
 
 @app.route('/buffcurrency')
 @cross_origin()

@@ -14,18 +14,18 @@
         <div id="usersButHome" class="collapse">
             {{ User.query.filter(User.latest_url_visited != "/").all() }}
         </div>
-        <p>Total amount of calcuations: {{ calc_count }}</p>
+        <p>Total amount of Calculations: {{ calc_count }}</p>
     </div>
     
     {% for user in users %}
         <div class="container">
-            <h1>{{ user.ip }} ({{ user.calcuations|length }})</h1>
-            <h2>First Visit: {{ user.first_visit }}</h2>
-            {% for calc in user.calcuations %}
-                <button data-toggle="collapse" data-target="#calc{{ calc.id }}">Calcuation {{ calc.id }}: {{ calc.time }}</button>
+            <h1>{{ user.ip }} ({{ user.Calculations|length }})</h1>
+            <h2>Days since first visit: {{ (now - user.first_visit).days }}</h2>
+            {% for calc in user.Calculations %}
+                <button data-toggle="collapse" data-target="#calc{{ calc.id }}">Calculation {{ calc.id }}: {{ calc.time }}</button>
                 <div id="calc{{ calc.id }}" class="collapse">
-                    Calcuation {{ calc.id }} <br>
-                    Date calcuated: {{ calc.time }} <br><br>
+                    Calculation {{ calc.id }} <br>
+                    Date calculated: {{ calc.time }} <br><br>
                     {{ json.loads(calc.results) }}
                 </div>
             {% endfor %}

@@ -39,12 +39,12 @@
 
   <div id="wrapper_calcs_info">
     <div class="alert alert-info" id="calcs">
-      {% for calcuation_num in resultsInfo.iter_pages() %}
-        {% if calcuation_num %}
-          {% if resultsInfo.page == calcuation_num %}
-            <a class="btn btn-info" href="{{ url_for('results', calcuation=calcuation_num) }}">{{ calcuation_num }}</a>
+      {% for Calculation_num in resultsInfo.iter_pages() %}
+        {% if Calculation_num %}
+          {% if resultsInfo.page == Calculation_num %}
+            <a class="btn btn-info" href="{{ url_for('results', Calculation=Calculation_num) }}">{{ Calculation_num }}</a>
           {% else %}
-            <a class="btn btn-outline-info" href="{{ url_for('results', calcuation=calcuation_num) }}">{{ calcuation_num }}</a>
+            <a class="btn btn-outline-info" href="{{ url_for('results', Calculation=Calculation_num) }}">{{ Calculation_num }}</a>
           {% endif %}
         {% else %}
           ...

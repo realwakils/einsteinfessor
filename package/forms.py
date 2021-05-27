@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from package import db
-from package.models import Calcuation
+from package.models import Calculation
 import re
 
 class Lesson(FlaskForm):

@@ -1,10 +1,10 @@
-import time, requests, json, atexit
+import time, requests, json, atexit, os
 from apscheduler.schedulers.background import BackgroundScheduler
 from package import db
 from package.models import BuffRates
 
 def update():
-		res = requests.get('http://api.exchangeratesapi.io/v1/latest?access_key=602cc04b94aaa7d94ddea3834c97d99f')
+		res = requests.get(f'http://api.exchangeratesapi.io/v1/latest?access_key={os.environ.get("BUFF_API_KEY")}')
 		data = res.json()
 
 		if (data['success']):
@@ -20,6 +20,8 @@ def update():
 				else:
 						BuffRates.query.first().rates = json.dumps(data)
 						db.session.commit()
+		else:
+				raise Exception('Not a succesful API request')
 
 
 scheduler = BackgroundScheduler()

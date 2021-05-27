@@ -23,5 +23,4 @@ htmlcov/
 .coverage.*
 *,cover
 
-#why does this not work?!
 *.db

@@ -5,8 +5,8 @@ from simplified_scrapy import SimplifiedDoc
 Einsteinfessor's internal notes by wakils
 
 We have two models.
-Model 1 is present when the user requests the calcuation after having it completed.
-Model 2 is present when the user requests the calcuation before having it completed.
+Model 1 is present when the user requests the Calculation after having it completed.
+Model 2 is present when the user requests the Calculation before having it completed.
 
 What are the differences?
 Model 1 delivers every piece of data we need, including extra.
@@ -142,6 +142,7 @@ def getResultsRaw(code):
     return json.dumps(results)
 
 
+# Just for testing purposes
 if __name__ == "__main__":
     import os
     f = open(os.path.dirname(os.path.realpath(__file__))+"\html.txt", "r")
@@ -149,4 +150,3 @@ if __name__ == "__main__":
     f.close()
 
     getResultsRaw(code)
-
