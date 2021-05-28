@@ -24,3 +24,5 @@ htmlcov/
 *,cover
 
 *.db
+
+__pycache__/
