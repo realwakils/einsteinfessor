@@ -3,8 +3,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from package import db
 from package.models import BuffRates
 
+BUFF_API_KEY = os.environ.get("BUFF_API_KEY")
+if not BUFF_API_KEY:
+		raise Exception('BUFF_API_KEY was not found...')
+
 def update():
-		res = requests.get(f'http://api.exchangeratesapi.io/v1/latest?access_key={os.environ.get("BUFF_API_KEY")}')
+		res = requests.get(f'http://api.exchangeratesapi.io/v1/latest?access_key={BUFF_API_KEY}')
 		data = res.json()
 
 		if (data['success']):
