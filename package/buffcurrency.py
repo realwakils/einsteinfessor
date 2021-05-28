@@ -23,7 +23,7 @@ def update():
 		else:
 				raise Exception('Not a succesful API request')
 
-
+update()
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=update, trigger="interval", hours=24)
 scheduler.start()

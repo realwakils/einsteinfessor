@@ -23,6 +23,4 @@ htmlcov/
 .coverage.*
 *,cover
 
-*.db
-
 __pycache__/
