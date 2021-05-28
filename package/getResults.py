@@ -69,7 +69,7 @@ def getResultsRaw(code):
         question_question = cleanme(ques['Question']['question'])
 
         #question_explanation
-        if ques['Question']['explanation']:
+        if 'explanation' in ques['Question']:
             question_explanation = cleanme(ques['Question']['explanation'])
         else:
             question_explanation = 'Der kunne desværre ikke findes nogen forklaring til dette spørgsmål.'
