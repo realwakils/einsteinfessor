@@ -34,7 +34,7 @@ header {
     padding-top: 7em;
     padding-bottom: 7em;
     text-align: center;
-    background-image: url('https://einsteinfessor.wakils.com/static/images/einsteinfessor_logo.png');
+    background-image: url('/static/images/einsteinfessor_logo.png');
     text-shadow: 2px 2px black;
     background-attachment: fixed;
     background-repeat: no-repeat;
