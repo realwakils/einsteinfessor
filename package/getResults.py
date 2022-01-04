@@ -37,7 +37,7 @@ application that uses the Einsteinfessor REST API. Quite unfortunate.
 def getResultsRaw(code):
     questions = []
     try:
-        jsonObject = code[code.find('{"answerDelay"'):].split('};')[0] + '}' if code.find('{"homeworkElementSessionId":"') == -1 else code[code.find('{"homeworkElementSessionId":"'):].split(');')[0]
+        jsonObject = code[code.find('{"api"'):].split('};')[0] + '}' if code.find('{"homeworkElementSessionId":"') == -1 else code[code.find('{"homeworkElementSessionId":"'):].split(');')[0]
         loadedJson = json.loads(jsonObject)
         model = 1 if 'timeTillHomeworkElementSessionEnds' in loadedJson else 2
     except Exception as e:
