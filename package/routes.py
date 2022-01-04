@@ -24,6 +24,8 @@ def handleUser():
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
+    return render_template('not_working.html')
+
     user_ip = getUserIP(request)
 
     form = Lesson()
